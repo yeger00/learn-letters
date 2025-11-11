@@ -1,29 +1,44 @@
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isModelLoading: boolean;
     isTranscribing: boolean;
+    elapsedTime?: number;
+}
+
+function formatTime(seconds: number): string {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 export function TranscribeButton(props: Props): JSX.Element {
-    const { isModelLoading, isTranscribing, onClick, ...buttonProps } = props;
+    const { isModelLoading, isTranscribing, elapsedTime, onClick, ...buttonProps } = props;
     return (
-        <button
-            {...buttonProps}
-            onClick={(event) => {
-                if (onClick && !isTranscribing && !isModelLoading) {
-                    onClick(event);
-                }
-            }}
-            disabled={isTranscribing}
-            className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center'
-        >
-            {isModelLoading ? (
-                <Spinner text={"Loading model..."} />
-            ) : isTranscribing ? (
-                <Spinner text={"Transcribing..."} />
-            ) : (
-                "Transcribe Audio"
+        <>
+            <button
+                {...buttonProps}
+                onClick={(event) => {
+                    if (onClick && !isTranscribing && !isModelLoading) {
+                        onClick(event);
+                    }
+                }}
+                disabled={isTranscribing}
+                className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center'
+            >
+                {isModelLoading ? (
+                    <Spinner text={"Loading model..."} />
+                ) : isTranscribing ? (
+                    <Spinner text={"Transcribing..."} />
+                ) : (
+                    "Transcribe Audio"
+                )}
+            </button>
+            {elapsedTime !== undefined && elapsedTime > 0 && (
+                <div className='mt-2 text-sm text-slate-600'>
+                    {isTranscribing ? 'Elapsed time: ' : 'Completed in: '}
+                    <span className='font-semibold'>{formatTime(elapsedTime)}</span>
+                </div>
             )}
-        </button>
+        </>
     );
 }
 

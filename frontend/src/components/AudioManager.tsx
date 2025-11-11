@@ -154,6 +154,8 @@ export function AudioManager(props: { transcriber: Transcriber }) {
     const [audioDownloadUrl, setAudioDownloadUrl] = useState<
         string | undefined
     >(undefined);
+    const [elapsedTime, setElapsedTime] = useState<number>(0);
+    const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
 
     const resetAudio = () => {
         setAudioData(undefined);
@@ -245,6 +247,35 @@ export function AudioManager(props: { transcriber: Transcriber }) {
         }
     }, [audioDownloadUrl]);
 
+    // Timer effect - tracks transcription time
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout | null = null;
+
+        if (isTimerRunning) {
+            intervalId = setInterval(() => {
+                setElapsedTime((prev) => prev + 1);
+            }, 1000);
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [isTimerRunning]);
+
+    // Monitor transcription state
+    useEffect(() => {
+        if (props.transcriber.isBusy && !isTimerRunning) {
+            // Transcription started
+            setElapsedTime(0);
+            setIsTimerRunning(true);
+        } else if (!props.transcriber.isBusy && isTimerRunning) {
+            // Transcription finished
+            setIsTimerRunning(false);
+        }
+    }, [props.transcriber.isBusy, isTimerRunning]);
+
     return (
         <>
             <div className='flex flex-col justify-center items-center rounded-lg bg-white shadow-xl shadow-black/5 ring-1 ring-slate-700/10'>
@@ -301,13 +332,14 @@ export function AudioManager(props: { transcriber: Transcriber }) {
                         mimeType={audioData.mimeType}
                     />
 
-                    <div className='relative w-full flex justify-center items-center'>
+                    <div className='relative w-full flex flex-col justify-center items-center'>
                         <TranscribeButton
                             onClick={() => {
                                 props.transcriber.start(audioData.buffer);
                             }}
                             isModelLoading={props.transcriber.isModelLoading}
                             isTranscribing={props.transcriber.isBusy}
+                            elapsedTime={elapsedTime}
                         />
                     </div>
                     {props.transcriber.progressItems.length > 0 && (
