@@ -1,38 +1,5 @@
-import { useEffect, useState } from "react";
-import { NoteServiceClient } from "../generated/notes.client";
-import { GrpcTransport } from "../services";
-import { Note } from "../generated/notes";
-
-const noteClient = new NoteServiceClient(GrpcTransport);
-
 const ListNotes = () => {
-    const [groupedNotes, setGroupedNotes] = useState<{ [date: string]: Note[] }>({});
-
-    useEffect(() => {
-        const fetchNotes = async () => {
-            try {
-                const call = await noteClient.listNotes({});
-                if (call.status.code !== 'OK') {
-                    console.warn(call);
-                    return;
-                }
-                const sortedNotes = call.response.notes.sort((a, b) => parseInt(b.createdAt) - parseInt(a.createdAt));
-                const grouped = sortedNotes.reduce((acc: { [date: string]: Note[] }, note: Note) => {
-                    const date = new Date(parseInt(note.createdAt)).toLocaleDateString();
-                    if (!acc[date]) {
-                        acc[date] = [];
-                    }
-                    acc[date].push(note);
-                    return acc;
-                }, {});
-                setGroupedNotes(grouped);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-
-        fetchNotes();
-    }, []);
+    const groupedNotes: { [date: string]: any[] } = {};
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);

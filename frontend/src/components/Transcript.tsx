@@ -1,11 +1,6 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import { TranscriberData } from "../hooks/useTranscriber";
 import { formatAudioTimestamp } from "../utils/AudioUtils";
-
-import { NoteServiceClient } from "../generated/notes.client";
-import { GrpcTransport } from "../services";
-
-const noteClient = new NoteServiceClient(GrpcTransport);
 
 interface Props {
     transcribedData: TranscriberData | undefined;
@@ -13,7 +8,6 @@ interface Props {
 
 export default function Transcript({ transcribedData }: Props) {
     const divRef = useRef<HTMLDivElement>(null);
-    const [ createStatus, setCreateStatus ] = useState("");
 
     const saveBlob = (blob: Blob, filename: string) => {
         const url = URL.createObjectURL(blob);
@@ -43,28 +37,6 @@ export default function Transcript({ transcribedData }: Props) {
         const blob = new Blob([jsonData], { type: "application/json" });
         saveBlob(blob, "transcript.json");
     };
-
-    const createNote = async () => {
-        if (transcribedData != undefined) {
-            try {
-                const call = await noteClient.createNote({
-                    transcription: transcribedData.text,
-                    audio: ''
-                });
-                console.log(call.status)
-                if (call.status.code != 'OK') {
-                    console.warn(call)
-                    setCreateStatus(`Error "${call.status.code}": "${call.status.detail}"`)
-                }
-                const status = call.response.status;
-                const note = call.response.note!!;
-                setCreateStatus(`Status "${status}": Created Note with ID "${note.id}".`)
-            } catch (e) {
-                console.log('caught error in grpc call')
-                console.error(e)
-            }
-        }
-    }
 
     // Scroll to the bottom when the component updates
     useEffect(() => {
@@ -110,12 +82,6 @@ export default function Transcript({ transcribedData }: Props) {
             {transcribedData && !transcribedData.isBusy && (
                 <div className='w-full text-right'>
                     <button
-                        onClick={createNote}
-                        className='text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 inline-flex items-center'
-                    >
-                        Create Note
-                    </button>
-                    <button
                         onClick={exportTXT}
                         className='text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 inline-flex items-center'
                     >
@@ -128,11 +94,6 @@ export default function Transcript({ transcribedData }: Props) {
                         Export JSON
                     </button>
                 </div>
-            )}
-            {createStatus && (
-                <p className="p-4 bg-blue-50 dark:bg-blue-100 m-4">{createStatus} 
-                <span> <a className="underline text-red-400" href="#list">Wanna check out your past journals?</a></span>
-                </p>
             )}
         </div>
     );
