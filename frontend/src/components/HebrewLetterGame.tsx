@@ -29,10 +29,10 @@ export function HebrewLetterGame(props: Props) {
 
             if (isCorrect) {
                 setGameState(GameState.CORRECT);
-                setFeedback(`נכון! אמרת "${transcribedText}"`);
+                setFeedback(`נכון!`);
             } else {
                 setGameState(GameState.INCORRECT);
-                setFeedback(`לא נכון. אמרת "${transcribedText}". נסה שוב!`);
+                setFeedback(`לא נכון. אמרת "${transcribedText}"`);
             }
         }
     }, [props.transcriber.output, props.transcriber.isBusy, gameState, currentLetter]);
