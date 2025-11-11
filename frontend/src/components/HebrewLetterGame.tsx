@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Transcriber } from "../hooks/useTranscriber";
 import { getRandomLetter, checkAnswer, HebrewLetter } from "../utils/HebrewLetters";
 import Constants from "../utils/Constants";
@@ -19,7 +19,6 @@ export function HebrewLetterGame(props: Props) {
     const [currentLetter, setCurrentLetter] = useState<HebrewLetter>(getRandomLetter());
     const [gameState, setGameState] = useState<GameState>(GameState.READY);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-    const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
     const [feedback, setFeedback] = useState<string>("");
 
     // Handle transcription completion
@@ -56,7 +55,6 @@ export function HebrewLetterGame(props: Props) {
                 stream.getTracks().forEach(track => track.stop());
             };
 
-            setAudioChunks(chunks);
             setMediaRecorder(recorder);
             recorder.start();
             setGameState(GameState.RECORDING);

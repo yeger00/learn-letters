@@ -1,6 +1,7 @@
 name: Deploy to GitHub Pages
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -22,15 +23,7 @@ jobs:
       - name: Build Project 🔧
         run: |
           cd frontend
-          mkdir -p src/generated && yarn protoc \
-            --ts_out src/generated/ \
-            --ts_opt long_type_string \
-            --proto_path ../protos \
-            --ts_opt ts_nocheck \
-            ../protos/*.proto
           yarn build
-        env:
-          VITE_GRPC_BACKEND: "https://whisper-notes-api.shivanshs9.me"
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
