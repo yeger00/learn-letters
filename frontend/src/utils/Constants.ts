@@ -29,7 +29,7 @@ export default {
     //DEFAULT_MODEL: "onnx-community/whisper-large-v3-turbo",
     DEFAULT_MODEL: "ivrit-ai/whisper-large-v3-turbo-onnx",
     DEFAULT_SUBTASK: "transcribe",
-    DEFAULT_LANGUAGE: "english",
+    DEFAULT_LANGUAGE: "he",
     DEFAULT_QUANTIZED: isMobileOrTablet,
     DEFAULT_MULTILINGUAL: true,
 };
