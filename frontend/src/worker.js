@@ -17,14 +17,12 @@ class PipelineFactory {
         if (this.instance === null) {
             this.instance = pipeline(this.task, this.model, {
                 dtype: {
-                    encoder_model:
-                        this.model === "onnx-community/whisper-large-v3-turbo"
-                            ? "fp16"
-                            : "fp32",
+                    encoder_model:"fp16",
                     decoder_model_merged: "q4", // or 'fp32' ('fp16' is broken)
                 },
                 device: "webgpu",
                 progress_callback,
+		revision: "8957ea089a385e053180621b60b6ee481299b034"
             });
         }
 
