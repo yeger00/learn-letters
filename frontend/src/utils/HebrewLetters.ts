@@ -121,7 +121,7 @@ export const HEBREW_LETTERS: HebrewLetter[] = [
     {
         letter: "ת",
         name: "Tav",
-        acceptableTranscriptions: ["ת", "תו", "תיו", "תב", "תאו"]
+        acceptableTranscriptions: ["ת", "תו", "תיו", "תב", "תאו", "תף", "תפ"]
     }
 ];
 
