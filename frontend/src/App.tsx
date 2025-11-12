@@ -6,12 +6,7 @@ import ListNotes from "./pages/ListNotes";
 const IS_WEBGPU_AVAILABLE = !!navigator.gpu;
 
 function App() {
-    const [menuOpen, setMenuOpen] = useState(false);
     const [hashPath, setHashPath] = useState(window.location.hash);
-
-    const toggleMenu = () => {
-        setMenuOpen(!menuOpen);
-    };
 
     const listenToUrlChange = () => {
         const newHashPath = window.location.hash;
@@ -24,11 +19,6 @@ function App() {
             window.removeEventListener("hashchange", listenToUrlChange);
         };
     }, []);
-
-    const switchPage = (newPage: string) => {
-        location.hash = newPage;
-        setMenuOpen(false);
-    }
 
     return IS_WEBGPU_AVAILABLE ? (
         <div className='flex flex-col justify-center items-center min-h-screen'>
