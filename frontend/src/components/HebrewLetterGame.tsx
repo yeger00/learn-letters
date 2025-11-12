@@ -130,7 +130,7 @@ export function HebrewLetterGame(props: Props) {
             case GameState.RECORDING:
                 return "⏹️ עצור הקלטה";
             case GameState.PROCESSING:
-                return "⏳ מעבד...";
+                return "⏳ מעבד";
             case GameState.CORRECT:
             case GameState.INCORRECT:
                 return "אות הבאה";
@@ -179,7 +179,7 @@ export function HebrewLetterGame(props: Props) {
     };
 
     return (
-        <div className={`min-h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500 ${getBackgroundColor()}`}>
+        <div className={`fixed inset-0 w-screen h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500 ${getBackgroundColor()}`}>
             <div className="text-center">
                 <h1 className="text-4xl font-bold mb-8 text-slate-800">
                     למד את האותיות

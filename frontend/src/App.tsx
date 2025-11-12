@@ -33,15 +33,6 @@ function App() {
     return IS_WEBGPU_AVAILABLE ? (
         <div className='flex flex-col justify-center items-center min-h-screen'>
             <div className='container flex flex-col justify-center items-center'>
-                <div className='absolute top-4 left-4 z-20'>
-                    <button onClick={toggleMenu} className='hamburger'>
-                        {menuOpen ? '✖' : '☰'}
-                    </button>
-                </div>
-                <div className={`menu ${menuOpen ? 'open' : ''}`}>
-                    <a onClick={() => {switchPage("new")}} className='menu-item'>Write a new entry...</a>
-                    <a onClick={() => {switchPage("list")}} className='menu-item'>Journal so far</a>
-                </div>
                 {hashPath === "#list" ? <ListNotes /> : <CreateNote />}
             </div>
 
