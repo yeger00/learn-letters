@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Transcriber } from "../hooks/useTranscriber";
 import { getRandomLetter, checkAnswer, HebrewLetter } from "../utils/HebrewLetters";
 import Constants from "../utils/Constants";
+import loadingGif from "../assets/loading.gif";
 
 interface Props {
     transcriber: Transcriber;
@@ -20,12 +21,33 @@ export function HebrewLetterGame(props: Props) {
     const [gameState, setGameState] = useState<GameState>(GameState.READY);
     const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
     const [feedback, setFeedback] = useState<string>("");
+    const [elapsedTime, setElapsedTime] = useState<number>(0);
+    const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+
+    // Timer effect - tracks transcription time
+    useEffect(() => {
+        let intervalId: NodeJS.Timeout | null = null;
+
+        if (isTimerRunning) {
+            intervalId = setInterval(() => {
+                setElapsedTime((prev) => prev + 1);
+            }, 1000);
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [isTimerRunning]);
 
     // Handle transcription completion
     useEffect(() => {
         if (props.transcriber.output && !props.transcriber.isBusy && gameState === GameState.PROCESSING) {
             const transcribedText = props.transcriber.output.text;
             const isCorrect = checkAnswer(currentLetter, transcribedText);
+
+            setIsTimerRunning(false);
 
             if (isCorrect) {
                 setGameState(GameState.CORRECT);
@@ -68,6 +90,8 @@ export function HebrewLetterGame(props: Props) {
         if (mediaRecorder && mediaRecorder.state === "recording") {
             mediaRecorder.stop();
             setGameState(GameState.PROCESSING);
+            setElapsedTime(0);
+            setIsTimerRunning(true);
         }
     };
 
@@ -88,7 +112,15 @@ export function HebrewLetterGame(props: Props) {
         setCurrentLetter(getRandomLetter());
         setGameState(GameState.READY);
         setFeedback("");
+        setElapsedTime(0);
+        setIsTimerRunning(false);
         props.transcriber.onInputChange();
+    };
+
+    const formatTime = (seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
     const getButtonText = () => {
@@ -101,7 +133,7 @@ export function HebrewLetterGame(props: Props) {
                 return "⏳ מעבד...";
             case GameState.CORRECT:
             case GameState.INCORRECT:
-                return "➡️ אות הבאה";
+                return "אות הבאה";
             default:
                 return "🎤 התחל להקליט";
         }
@@ -150,7 +182,7 @@ export function HebrewLetterGame(props: Props) {
         <div className={`min-h-screen flex flex-col items-center justify-center p-8 transition-colors duration-500 ${getBackgroundColor()}`}>
             <div className="text-center">
                 <h1 className="text-4xl font-bold mb-8 text-slate-800">
-                    🔤 למד את האותיות! 🔤
+                    למד את האותיות
                 </h1>
 
                 {/* Display the letter */}
@@ -159,9 +191,6 @@ export function HebrewLetterGame(props: Props) {
                     <div className={`text-[200px] font-bold ${getLetterColor()} transition-colors duration-300`}>
                         {currentLetter.letter}
                     </div>
-                    <p className="text-3xl text-slate-600 mt-4">
-                        {currentLetter.name}
-                    </p>
                 </div>
 
                 {/* Record button */}
@@ -186,6 +215,16 @@ export function HebrewLetterGame(props: Props) {
                     {getButtonText()}
                 </button>
 
+                {/* Processing/Loading state */}
+                {gameState === GameState.PROCESSING && (
+                    <div className="mt-8 flex flex-col items-center">
+                        <img src={loadingGif} alt="Loading..." className="w-32 h-32" />
+                        <div className="mt-4 text-xl text-slate-700">
+                            הזמן שחלף: <span className="font-bold">{formatTime(elapsedTime)}</span>
+                        </div>
+                    </div>
+                )}
+
                 {/* Feedback message */}
                 {feedback && (
                     <div className={`
@@ -202,18 +241,8 @@ export function HebrewLetterGame(props: Props) {
                 {/* Loading model message */}
                 {props.transcriber.isModelLoading && (
                     <div className="mt-8 p-4 bg-yellow-100 rounded-lg text-lg">
-                        <p className="text-yellow-800">טוען מודל... (רק פעם ראשונה)</p>
-                        {props.transcriber.progressItems.map((item) => (
-                            <div key={item.file} className="mt-2">
-                                <div className="text-sm text-yellow-700">{item.file}</div>
-                                <div className="w-full bg-yellow-200 rounded-full h-2 mt-1">
-                                    <div
-                                        className="bg-yellow-600 h-2 rounded-full transition-all"
-                                        style={{ width: `${item.progress * 100}%` }}
-                                    ></div>
-                                </div>
-                            </div>
-                        ))}
+                        <p className="text-yellow-800 font-bold mb-2">טוען מודל... (רק פעם ראשונה)</p>
+                        <p className="text-yellow-700 text-base">זה עשוי לקחת עד 2 דקות</p>
                     </div>
                 )}
             </div>

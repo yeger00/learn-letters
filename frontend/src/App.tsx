@@ -42,33 +42,25 @@ function App() {
                     <a onClick={() => {switchPage("new")}} className='menu-item'>Write a new entry...</a>
                     <a onClick={() => {switchPage("list")}} className='menu-item'>Journal so far</a>
                 </div>
-                <h1 className='text-5xl font-extrabold tracking-tight text-slate-900 sm:text-7xl text-center'>
-                    Whisper Notes
-                </h1>
                 {hashPath === "#list" ? <ListNotes /> : <CreateNote />}
             </div>
 
             <div className='bottom-4 credits'>
                 <p>
-                Made with{" "}
-                <a
-                    className='underline'
-                    href='https://github.com/xenova/transformers.js'
-                >
-                    🤗 Transformers.js
-                </a>
-                </p>
-                <p>
                 Developed by{" "}
                 <a
                     className='underline'
-                    href='https://github.com/shivanshs9'
+                    href='https://github.com/yeger00'
                 >
-                    @shivanshs9
+                    yeger
                 </a> 🚀
                 </p>
                 <p>
-                    Big Thanks to the original <a className="underline" href="https://github.com/xenova/whisper-web">Whisper Web</a> project! ❤️
+                    Thanks to:{" "}
+                    <a className="underline" href="https://www.ivrit.ai/">ivrit.ai</a>,{" "}
+                    <a className="underline" href="https://github.com/xenova/whisper-web">Whisper Web</a>,{" "}
+                    <a className="underline" href="https://github.com/xenova/transformers.js">🤗 Transformers.js</a> and{" "}
+                    <a className="underline" href="https://github.com/shivanshs9">@shivanshs9</a> ❤️
                 </p>
             </div>
         </div>
